@@ -8,6 +8,8 @@
  * https://github.com/RainLoop/owncloud
  */
 
+include_once OC_App::getAppPath('rainloop').'/lib/RainLoopHelper.php';
+
 OC::$CLASSPATH['OC_RainLoop_Helper'] = OC_App::getAppPath('rainloop') . '/lib/RainLoopHelper.php';
 
 OCP\App::registerAdmin('rainloop', 'admin');
