@@ -25,6 +25,7 @@ namespace Facebook;
 
 use Facebook\Authentication\AccessToken;
 
+// phpcs:ignore PHPCompatibility.Interfaces.RemovedSerializable.RedundantSerializableImplementation -- RainLoop declares PHP 5.4 as its minimum supported version.
 class FacebookApp implements \Serializable
 {
     /**
@@ -97,5 +98,26 @@ class FacebookApp implements \Serializable
         list($id, $secret) = unserialize($serialized);
 
         $this->__construct($id, $secret);
+    }
+
+    /**
+     * Serializes the app using PHP's modern serialization hooks.
+     *
+     * @return array
+     */
+    public function __serialize()
+    {
+        return array($this->id, $this->secret);
+    }
+
+    /**
+     * Restores the app using PHP's modern serialization hooks.
+     *
+     * @param array $data
+     */
+    public function __unserialize($data)
+    {
+        $this->id = isset($data[0]) ? $data[0] : null;
+        $this->secret = isset($data[1]) ? $data[1] : null;
     }
 }

@@ -82,25 +82,34 @@ class Version
 	public function UpdateCore($oActions, $sFile)
 	{
 		$bResult = false;
+		if (!\class_exists('\ZipArchive'))
+		{
+			if ($this->oLogger)
+			{
+				$this->oLogger->Write(
+					'Cannot update RainLoop: enable the PHP ZIP extension (ext-zip)',
+					\MailSo\Log\Enumerations\Type::ERROR, 'INSTALLER');
+			}
+
+			return false;
+		}
 
 		$sNewVersion = '';
 		$sTmp = $oActions->downloadRemotePackageByUrl($sFile);
 		if (!empty($sTmp))
 		{
-			include_once APP_VERSION_ROOT_PATH.'app/libraries/pclzip/pclzip.lib.php';
-
-			$oArchive = new \PclZip($sTmp);
 			$sTmpFolder = APP_PRIVATE_DATA.\md5($sTmp);
 
 			\mkdir($sTmpFolder);
 			if (\is_dir($sTmpFolder))
 			{
-				$bResult = 0 !== $oArchive->extract(PCLZIP_OPT_PATH, $sTmpFolder);
+				$sExtractError = '';
+				$bResult = \RainLoop\Utils::ExtractZipArchive($sTmp, $sTmpFolder, $sExtractError);
 				if (!$bResult)
 				{
 					if ($this->oLogger)
 					{
-						$this->oLogger->Write('Cannot extract package files: '.$oArchive->errorInfo(), \MailSo\Log\Enumerations\Type::ERROR, 'INSTALLER');
+						$this->oLogger->Write('Cannot extract package files: '.$sExtractError, \MailSo\Log\Enumerations\Type::ERROR, 'INSTALLER');
 					}
 				}
 

@@ -2211,19 +2211,6 @@ class Net_IDNA2
      */
     private $_version = '2003';
 
-    /**
-     * Cached value indicating whether or not mbstring function overloading is
-     * on for strlen
-     *
-     * This is cached for optimal performance.
-     *
-     * @var boolean
-     * @see Net_IDNA2::_byteLength()
-     */
-    private static $_mb_string_overload = null;
-    // }}}
-
-
     // {{{ constructor
     /**
      * Constructor
@@ -2241,11 +2228,6 @@ class Net_IDNA2
             $this->setParams($options);
         }
 
-        // populate mbstring overloading cache if not set
-        if (self::$_mb_string_overload === null) {
-            self::$_mb_string_overload = (extension_loaded('mbstring')
-                && (ini_get('mbstring.func_overload') & 0x02) === 0x02);
-        }
     }
     // }}}
 
@@ -3341,18 +3323,16 @@ class Net_IDNA2
     }
 
     /**
-     * Gets the length of a string in bytes even if mbstring function
-     * overloading is turned on
+     * Gets the length of a string in bytes.
      *
      * @param string $string the string for which to get the length.
      *
      * @return integer the length of the string in bytes.
      *
-     * @see Net_IDNA2::$_mb_string_overload
      */
     private static function _byteLength($string)
     {
-        if (self::$_mb_string_overload) {
+        if (function_exists('mb_strlen')) {
             return mb_strlen($string, '8bit');
         }
         return strlen((binary)$string);

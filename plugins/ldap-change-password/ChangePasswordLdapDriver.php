@@ -122,7 +122,16 @@ class ChangePasswordLdapDriver implements \RainLoop\Providers\ChangePassword\Cha
 				'{gecos}' => function_exists('posix_getpwnam') ? posix_getpwnam($oAccount->Login()) : ''
 			));
 
-			$oCon = @\ldap_connect($this->sHostName, $this->iHostPort);
+			$sHostName = trim($this->sHostName);
+			if (false === strpos($sHostName, '://'))
+			{
+				if (substr_count($sHostName, ':') > 1 && '[' !== substr($sHostName, 0, 1))
+				{
+					$sHostName = '[' . $sHostName . ']';
+				}
+				$sHostName = 'ldap://' . $sHostName . ':' . (int) $this->iHostPort;
+			}
+			$oCon = @\ldap_connect($sHostName);
 			if ($oCon)
 			{
 				if (!@\ldap_set_option($oCon, LDAP_OPT_PROTOCOL_VERSION, 3))
@@ -174,9 +183,6 @@ class ChangePasswordLdapDriver implements \RainLoop\Providers\ChangePassword\Cha
 							break;
 						case \function_exists('hash'):
 							$sEncodedNewPassword = $sShaPrefix.\base64_encode(\hash('sha1', $sNewPassword, true).$sSshaSalt);
-							break;
-						case \function_exists('mhash') && defined('MHASH_SHA1'):
-							$sEncodedNewPassword = $sShaPrefix.\base64_encode(\mhash(MHASH_SHA1, $sNewPassword).$sSshaSalt);
 							break;
 					}
 					break;

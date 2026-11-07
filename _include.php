@@ -5,6 +5,7 @@
 /**
  * @return string
  */
+// phpcs:ignore PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore -- This name is a required RainLoop custom-data hook.
 function __get_custom_data_full_path()
 {
 	return '';
@@ -14,6 +15,7 @@ function __get_custom_data_full_path()
 /**
  * @return string
  */
+// phpcs:ignore PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore -- This name is a required RainLoop configuration hook.
 function __get_additional_configuration_name()
 {
 	return '';

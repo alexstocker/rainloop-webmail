@@ -59,10 +59,10 @@ class Logger extends \MailSo\Base\Collection
 
 		if ($bRegPhpErrorHandler)
 		{
-			\set_error_handler(array(&$this, '__phpErrorHandler'));
+		\set_error_handler(array(&$this, 'handlePhpError'));
 		}
 
-		\register_shutdown_function(array(&$this, '__loggerShutDown'));
+		\register_shutdown_function(array(&$this, 'handleShutdown'));
 	}
 
 	/**
@@ -231,7 +231,7 @@ class Logger extends \MailSo\Base\Collection
 	 *
 	 * @return bool
 	 */
-	public function __phpErrorHandler($iErrNo, $sErrStr, $sErrFile, $iErrLine)
+	public function handlePhpError($iErrNo, $sErrStr, $sErrFile, $iErrLine)
 	{
 		$iType = \MailSo\Log\Enumerations\Type::NOTICE_PHP;
 		switch ($iErrNo)
@@ -253,7 +253,7 @@ class Logger extends \MailSo\Base\Collection
 	/**
 	 * @return void
 	 */
-	public function __loggerShutDown()
+	public function handleShutdown()
 	{
 		if ($this->bUsed)
 		{

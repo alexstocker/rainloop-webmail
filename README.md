@@ -20,6 +20,12 @@ For more information about the product, check [rainloop.net](http://www.rainloop
 
 Information about installing the product, check the [documentation page](http://www.rainloop.net/docs/installation/).
 
+## PHP extensions
+
+The PHP `zip` extension (`ext-zip`) is required for installing plugins from the
+admin interface and for RainLoop core updates. The ZIP attachment action is
+also available when this extension is enabled.
+
 ## License
 
 **RainLoop Webmail (Legacy edition)** is released under

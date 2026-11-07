@@ -18,16 +18,10 @@ namespace MailSo\Base;
 class Http
 {
 	/**
-	 * @var bool
-	 */
-	private $bIsMagicQuotesOn;
-
-	/**
 	 * @access private
 	 */
 	private function __construct()
 	{
-		$this->bIsMagicQuotesOn = (bool) @\ini_get('magic_quotes_gpc');
 	}
 
 	/**
@@ -453,14 +447,11 @@ class Http
 	 */
 	static public function DetectAndHackFollowLocationUrl($sUrl, &$aOptions, $oLogger = null)
 	{
-		$sSafeMode = \strtolower(\trim(@\ini_get('safe_mode')));
-		$bSafeMode = 'on' === $sSafeMode || '1' === $sSafeMode;
-
 		$sNewUrl = null;
 		$sUrl = isset($aOptions[CURLOPT_URL]) ? $aOptions[CURLOPT_URL] : $sUrl;
 
 		if (isset($aOptions[CURLOPT_FOLLOWLOCATION]) && $aOptions[CURLOPT_FOLLOWLOCATION] && 0 < \strlen($sUrl) &&
-			($bSafeMode || \ini_get('open_basedir') !== ''))
+			\ini_get('open_basedir') !== '')
 		{
 			$aOptions[CURLOPT_FOLLOWLOCATION] = false;
 
