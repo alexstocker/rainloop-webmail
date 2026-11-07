@@ -1,3 +1,12 @@
+# RainLoop Webmail Fork
+
+## Development Hints
+
+To build owncloud Rainloop Legacy app execute
+
+1. `docker compose run --no-deps --rm node yarn install --frozen-lockfile`
+2. `make rt-build`
+
 <div align="center">
   <a href="https://github.com/RainLoop/rainloop-webmail">
     <img width="200" height="200" src="https://www.rainloop.net/static/img/logo-256x256-tiny.png">
