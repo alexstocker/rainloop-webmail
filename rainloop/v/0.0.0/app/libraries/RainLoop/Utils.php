@@ -26,6 +26,108 @@ class Utils
 	}
 
 	/**
+	 * @param string $sArchivePath
+	 * @param string $sDestination
+	 * @param string $sError
+	 *
+	 * @return bool
+	 */
+	static public function ExtractZipArchive($sArchivePath, $sDestination, &$sError)
+	{
+		$sError = '';
+		if (!\class_exists('\ZipArchive'))
+		{
+			$sError = 'The PHP ZIP extension (ext-zip) is required to extract RainLoop packages';
+			return false;
+		}
+
+		if (!\is_dir($sDestination) || \is_link($sDestination))
+		{
+			$sError = 'The ZIP extraction destination does not exist or is not a directory';
+			return false;
+		}
+
+		$oArchive = new \ZipArchive();
+		$iOpenResult = $oArchive->open($sArchivePath);
+		if (true !== $iOpenResult)
+		{
+			$sError = 'Cannot open ZIP archive (error '.$iOpenResult.')';
+			return false;
+		}
+
+		$sDestinationPath = \rtrim($sDestination, '/\\');
+		if (0 === $oArchive->numFiles)
+		{
+			$sError = 'ZIP archive is empty';
+			$oArchive->close();
+			return false;
+		}
+
+		for ($iIndex = 0; $iIndex < $oArchive->numFiles; $iIndex++)
+		{
+			$sEntryName = $oArchive->getNameIndex($iIndex);
+			$sRelativePath = \str_replace('\\', '/', (string) $sEntryName);
+			$sRelativePath = \rtrim($sRelativePath, '/');
+
+			if (false === $sEntryName || '' === $sRelativePath ||
+				false !== \strpos((string) $sEntryName, "\0") ||
+				'/' === \substr($sRelativePath, 0, 1) ||
+				\preg_match('/^[a-zA-Z]:/', $sRelativePath))
+			{
+				$sError = 'ZIP archive contains an invalid entry path';
+				$oArchive->close();
+				return false;
+			}
+
+			$aPathParts = \explode('/', $sRelativePath);
+			$sEntryPath = $sDestinationPath;
+			foreach ($aPathParts as $sPathPart)
+			{
+				if ('' === $sPathPart || '.' === $sPathPart || '..' === $sPathPart)
+				{
+					$sError = 'ZIP archive contains an unsafe entry path: '.$sEntryName;
+					$oArchive->close();
+					return false;
+				}
+
+				$sEntryPath .= DIRECTORY_SEPARATOR.$sPathPart;
+				if (\is_link($sEntryPath))
+				{
+					$sError = 'ZIP extraction would write through a symbolic link: '.$sEntryName;
+					$oArchive->close();
+					return false;
+				}
+			}
+
+			$iOperatingSystem = 0;
+			$iExternalAttributes = 0;
+			if (\method_exists($oArchive, 'getExternalAttributesIndex') &&
+				$oArchive->getExternalAttributesIndex($iIndex, $iOperatingSystem, $iExternalAttributes) &&
+				3 === $iOperatingSystem &&
+				0120000 === (($iExternalAttributes >> 16) & 0170000))
+			{
+				$sError = 'ZIP archive contains an unsupported symbolic link: '.$sEntryName;
+				$oArchive->close();
+				return false;
+			}
+		}
+
+		$bResult = $oArchive->extractTo($sDestination);
+		if (!$bResult)
+		{
+			$sError = 'Cannot extract ZIP archive: '.$oArchive->getStatusString();
+		}
+
+		$bCloseResult = $oArchive->close();
+		if ($bResult && !$bCloseResult)
+		{
+			$sError = 'Cannot close ZIP archive after extraction';
+		}
+
+		return $bResult && $bCloseResult;
+	}
+
+	/**
 	 * @param string $sFileName
 	 * @param string $sSignature
 	 *
@@ -93,10 +195,8 @@ class Utils
 				$aString[] = $sKey;
 				$sResult = @\serialize($aString);
 
-				\openssl_free_key($oPubKey);
 			}
 
-			\openssl_free_key($oPrivKey);
 		}
 
 		return $sResult;
@@ -134,7 +234,6 @@ class Utils
 				}
 			}
 
-			\openssl_free_key($oPrivKey);
 		}
 
 		return $sResult;

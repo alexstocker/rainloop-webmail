@@ -31,7 +31,6 @@ use Facebook\Url\FacebookUrlManipulator;
 use Facebook\PersistentData\PersistentDataInterface;
 use Facebook\PersistentData\FacebookSessionPersistentDataHandler;
 use Facebook\PseudoRandomString\PseudoRandomStringGeneratorInterface;
-use Facebook\PseudoRandomString\McryptPseudoRandomStringGenerator;
 use Facebook\PseudoRandomString\OpenSslPseudoRandomStringGenerator;
 use Facebook\PseudoRandomString\UrandomPseudoRandomStringGenerator;
 use Facebook\Exceptions\FacebookSDKException;
@@ -121,12 +120,7 @@ class FacebookRedirectLoginHelper
      */
     public function detectPseudoRandomStringGenerator()
     {
-        // Since openssl_random_pseudo_bytes() can sometimes return non-cryptographically
-        // secure pseudo-random strings (in rare cases), we check for mcrypt_create_iv() first.
-        if (function_exists('mcrypt_create_iv')) {
-            return new McryptPseudoRandomStringGenerator();
-        }
-
+        // Prefer OpenSSL and require it to confirm that the random bytes are secure.
         if (function_exists('openssl_random_pseudo_bytes')) {
             return new OpenSslPseudoRandomStringGenerator();
         }

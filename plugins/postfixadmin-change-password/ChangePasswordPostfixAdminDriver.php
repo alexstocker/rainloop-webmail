@@ -287,7 +287,7 @@ class ChangePasswordPostfixAdminDriver implements \RainLoop\Providers\ChangePass
 	{
 		$sResult = '';
 		if (function_exists('random_bytes')) {
-			$sSalt = substr(base64_encode(random_bytes(32)), 0, 16);
+			$sSalt = substr(strtr(rtrim(base64_encode(random_bytes(32)), '='), '+', '.'), 0, 16);
 		} else {
 			$sSalt = substr(str_shuffle('./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'), 0, 16);	
 		}
@@ -309,7 +309,7 @@ class ChangePasswordPostfixAdminDriver implements \RainLoop\Providers\ChangePass
 				break;
 
 			case 'system':
-				$sResult = '{CRYPT}' . crypt($sPassword);
+				$sResult = '{CRYPT}' . crypt($sPassword, substr($sSalt, 0, 2));
 				break;
 
 			case 'sha256-crypt':

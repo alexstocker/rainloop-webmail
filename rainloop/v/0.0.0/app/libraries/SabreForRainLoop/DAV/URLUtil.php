@@ -81,7 +81,7 @@ class URLUtil {
         switch($encoding) {
 
             case 'ISO-8859-1' :
-                $path = utf8_encode($path);
+                $path = \MailSo\Base\Utils::ConvertEncoding($path, 'ISO-8859-1', 'UTF-8');
 
         }
 

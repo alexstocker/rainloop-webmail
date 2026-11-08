@@ -4676,6 +4676,13 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 		$sFile = $this->GetActionParam('File', '');
 
 		$this->Logger()->Write('Start package install: '.$sFile.' ('.$sType.')', \MailSo\Log\Enumerations\Type::INFO, 'INSTALLER');
+		if ('plugin' === $sType && !\class_exists('\ZipArchive'))
+		{
+			$this->Logger()->Write(
+				'Cannot install package: enable the PHP ZIP extension (ext-zip)',
+				\MailSo\Log\Enumerations\Type::ERROR, 'INSTALLER');
+			return $this->DefaultResponse(__FUNCTION__, false);
+		}
 
 		$sRealFile = '';
 
@@ -4705,9 +4712,6 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 
 		if ('' !== $sTmp)
 		{
-			include_once APP_VERSION_ROOT_PATH.'app/libraries/pclzip/pclzip.lib.php';
-
-			$oArchive = new \PclZip($sTmp);
 			if ('plugin' === $sType)
 			{
 				$bResult = true;
@@ -4722,10 +4726,11 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 
 				if ($bResult)
 				{
-					$bResult = 0 !== $oArchive->extract(PCLZIP_OPT_PATH, APP_PLUGINS_PATH);
+					$sExtractError = '';
+					$bResult = \RainLoop\Utils::ExtractZipArchive($sTmp, APP_PLUGINS_PATH, $sExtractError);
 					if (!$bResult)
 					{
-						$this->Logger()->Write('Cannot extract package files: '.$oArchive->errorInfo(), \MailSo\Log\Enumerations\Type::ERROR, 'INSTALLER');
+						$this->Logger()->Write('Cannot extract package files: '.$sExtractError, \MailSo\Log\Enumerations\Type::ERROR, 'INSTALLER');
 					}
 				}
 			}
@@ -7858,7 +7863,6 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 			}
 			else
 			{
-				@\ini_set('auto_detect_line_endings', true);
 				$mData = $this->FilesProvider()->GetFile($oAccount, $sSavedName);
 				if ($mData)
 				{
@@ -7887,7 +7891,6 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 				unset($mData);
 				$this->FilesProvider()->Clear($oAccount, $sSavedName);
 
-				@\ini_set('auto_detect_line_endings', false);
 			}
 		}
 
