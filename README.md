@@ -1,5 +1,9 @@
 # RainLoop Webmail Fork
 
+1.18-devel [![PHP 8.3](https://img.shields.io/github/actions/workflow/status/alexstocker/rainloop-webmail/php.yml?branch=1.18-devel&label=PHP%208.3)](https://github.com/alexstocker/rainloop-webmail/actions/workflows/php.yml)
+
+Master [![PHP 8.3](https://img.shields.io/github/actions/workflow/status/alexstocker/rainloop-webmail/php.yml?branch=master&label=PHP%208.3)](https://github.com/alexstocker/rainloop-webmail/actions/workflows/php.yml)
+
 ## Development Hints
 
 To build owncloud Rainloop Legacy app execute
