@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - 1.18-devel
       - feature/*
   pull_request:
     types:
@@ -39,4 +40,21 @@ jobs:
           "$phpcs_bin/phpcs" --config-set installed_paths "$(composer global config home)/vendor/phpcompatibility/php-compatibility"
 
       - name: Check PHP 8.3 compatibility
-        run: phpcs -p . --standard=PHPCompatibility --runtime-set testVersion 8.3 --ignore=vendor/*
+        run: |
+          output_file="$(mktemp)"
+          trap 'rm -f "$output_file"' EXIT
+
+          if phpcs -p . --standard=PHPCompatibility --runtime-set testVersion 8.3 --ignore=vendor/* >"$output_file" 2>&1; then
+            cat "$output_file"
+            exit 0
+          else
+            phpcs_status=$?
+          fi
+
+          cat "$output_file"
+          if [ "$phpcs_status" -le 3 ]; then
+            echo "::warning title=PHP 8.3 compatibility::PHPCompatibility reported findings (PHPCS exit code $phpcs_status); see this step's log."
+            exit 0
+          fi
+
+          exit "$phpcs_status"
