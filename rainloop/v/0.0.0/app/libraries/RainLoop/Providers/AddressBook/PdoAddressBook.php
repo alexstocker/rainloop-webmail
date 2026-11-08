@@ -1737,7 +1737,7 @@ class PdoAddressBook
 			$sResult = $oException->getMessage();
 			if (!empty($sResult) && !\MailSo\Base\Utils::IsAscii($sResult) && !\MailSo\Base\Utils::IsUtf8($sResult))
 			{
-				$sResult = @\utf8_encode($sResult);
+				$sResult = \MailSo\Base\Utils::ConvertEncoding($sResult, 'ISO-8859-1', 'UTF-8');
 			}
 
 			if (!\is_string($sResult) || empty($sResult))

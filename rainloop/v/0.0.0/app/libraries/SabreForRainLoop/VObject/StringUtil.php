@@ -47,7 +47,7 @@ class StringUtil {
         $encoding = mb_detect_encoding($str , array('UTF-8','ISO-8859-1'), true);
 
         if ($encoding === 'ISO-8859-1') {
-            $newStr = utf8_encode($str);
+            $newStr = \MailSo\Base\Utils::ConvertEncoding($str, 'ISO-8859-1', 'UTF-8');
         } else {
             $newStr = $str;
         }

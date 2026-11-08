@@ -6,11 +6,6 @@
 		{
 			define('APP_START', microtime(true));
 
-			@ini_set('register_globals', 0);
-			@ini_set('zend.ze1_compatibility_mode', 0);
-			@ini_set('magic_quotes_gpc', 0);
-			@ini_set('magic_quotes_runtime', 0);
-
 			define('APP_START_TIME', time());
 			define('APP_REQUEST_RND', md5(APP_START.rand(10000, 99999).APP_START));
 			define('APP_VERSION_ROOT_PATH', APP_INDEX_ROOT_PATH.'rainloop/v/'.APP_VERSION.'/');

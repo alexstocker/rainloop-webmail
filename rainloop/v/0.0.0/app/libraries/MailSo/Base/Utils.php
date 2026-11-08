@@ -159,7 +159,8 @@ END;
 			}
 			else
 			{
-				$sSrt = @\utf8_encode($sSrt);
+				$sSrt = \MailSo\Base\Utils::ConvertEncoding(
+					$sSrt, \MailSo\Base\Enumerations\Charset::ISO_8859_1, \MailSo\Base\Enumerations\Charset::UTF_8);
 			}
 		}
 
@@ -454,20 +455,6 @@ END;
 		{
 			default:
 				$bUnknown = true;
-				break;
-
-			case ($sFromEncoding === \MailSo\Base\Enumerations\Charset::ISO_8859_1 &&
-					$sToEncoding === \MailSo\Base\Enumerations\Charset::UTF_8 &&
-					\function_exists('utf8_encode')):
-
-				$sResult = \utf8_encode($sResult);
-				break;
-
-			case ($sFromEncoding === \MailSo\Base\Enumerations\Charset::UTF_8 &&
-					$sToEncoding === \MailSo\Base\Enumerations\Charset::ISO_8859_1 &&
-					\function_exists('utf8_decode')):
-
-				$sResult = \utf8_decode($sResult);
 				break;
 
 			case ($sFromEncoding === \MailSo\Base\Enumerations\Charset::UTF_7_IMAP &&
@@ -1291,10 +1278,7 @@ END;
 		{
 			$iResetTimer = 0;
 
-			$sSafeMode = \strtolower(\trim(@\ini_get('safe_mode')));
-			$bSafeMode = 'on' === $sSafeMode || '1' === $sSafeMode || 'true' === $sSafeMode;
-
-			$bValidateAction = !$bSafeMode && \MailSo\Base\Utils::FunctionExistsAndEnabled('set_time_limit');
+			$bValidateAction = \MailSo\Base\Utils::FunctionExistsAndEnabled('set_time_limit');
 		}
 
 		if ($bValidateAction && $iTimeToReset < $iTime - $iResetTimer)
@@ -2272,35 +2256,7 @@ END;
 	 */
 	public static function StripSlashesValue($mValue, $bClearNullBite = false)
 	{
-		static $bIsMagicQuotesOn = null;
-		if (null === $bIsMagicQuotesOn)
-		{
-			$bIsMagicQuotesOn = (bool) @\ini_get('magic_quotes_gpc');
-		}
-
-		if (!$bIsMagicQuotesOn)
-		{
-			return $bClearNullBite && \is_string($mValue) ? \MailSo\Base\Utils::ClearNullBite($mValue) : $mValue;
-		}
-
-		$sType = \gettype($mValue);
-		if ('string' === $sType)
-		{
-			return \stripslashes($bClearNullBite ? \MailSo\Base\Utils::ClearNullBite($mValue) : $mValue);
-		}
-		else if ('array' === $sType)
-		{
-			$aReturnValue = array();
-			$mValueKeys = \array_keys($mValue);
-			foreach ($mValueKeys as $sKey)
-			{
-				$aReturnValue[$sKey] = \MailSo\Base\Utils::StripSlashesValue($mValue[$sKey], $bClearNullBite);
-			}
-
-			return $aReturnValue;
-		}
-
-		return $mValue;
+		return $bClearNullBite && \is_string($mValue) ? \MailSo\Base\Utils::ClearNullBite($mValue) : $mValue;
 	}
 
 	/**

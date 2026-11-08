@@ -193,7 +193,16 @@ class LdapContactsSuggestions implements \RainLoop\Providers\Suggestions\ISugges
 		$sSearchEscaped = $this->escape($sQuery);
 
 		$aResult = array();
-		$oCon = @\ldap_connect($this->sHostName, $this->iHostPort);
+		$sHostName = trim($this->sHostName);
+		if (false === strpos($sHostName, '://'))
+		{
+			if (substr_count($sHostName, ':') > 1 && '[' !== substr($sHostName, 0, 1))
+			{
+				$sHostName = '[' . $sHostName . ']';
+			}
+			$sHostName = 'ldap://' . $sHostName . ':' . (int) $this->iHostPort;
+		}
+		$oCon = @\ldap_connect($sHostName);
 		if ($oCon)
 		{
 			$this->oLogger->Write('ldap_connect: connected', \MailSo\Log\Enumerations\Type::INFO, 'LDAP');

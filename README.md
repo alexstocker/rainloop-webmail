@@ -1,3 +1,16 @@
+# RainLoop Webmail Fork
+
+1.18-devel [![PHP 8.3](https://img.shields.io/github/actions/workflow/status/alexstocker/rainloop-webmail/php.yml?branch=1.18-devel&label=PHP%208.3)](https://github.com/alexstocker/rainloop-webmail/actions/workflows/php.yml)
+
+Master [![PHP 8.3](https://img.shields.io/github/actions/workflow/status/alexstocker/rainloop-webmail/php.yml?branch=master&label=PHP%208.3)](https://github.com/alexstocker/rainloop-webmail/actions/workflows/php.yml)
+
+## Development Hints
+
+To build owncloud Rainloop Legacy app execute
+
+1. `docker compose run --no-deps --rm node yarn install --frozen-lockfile`
+2. `make rt-build`
+
 <div align="center">
   <a href="https://github.com/RainLoop/rainloop-webmail">
     <img width="200" height="200" src="https://www.rainloop.net/static/img/logo-256x256-tiny.png">
@@ -19,6 +32,12 @@
 For more information about the product, check [rainloop.net](http://www.rainloop.net/).
 
 Information about installing the product, check the [documentation page](http://www.rainloop.net/docs/installation/).
+
+## PHP extensions
+
+The PHP `zip` extension (`ext-zip`) is required for installing plugins from the
+admin interface and for RainLoop core updates. The ZIP attachment action is
+also available when this extension is enabled.
 
 ## License
 

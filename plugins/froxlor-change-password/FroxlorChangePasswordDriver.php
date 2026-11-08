@@ -176,7 +176,7 @@ class FroxlorChangePasswordDriver implements \RainLoop\Providers\ChangePassword\
 	private function makeCryptPassword ($password,$type = 3) {
 		switch ($type) {
 			case 0:
-				$cryptPassword = \crypt($password);
+				$cryptPassword = \crypt($password, \substr($this->generatePassword(true), 0, 2));
 				break;
 			case 1:
 				$cryptPassword = \crypt($password, '$1$' . $this->generatePassword(true).  $this->generatePassword(true));
@@ -200,7 +200,7 @@ class FroxlorChangePasswordDriver implements \RainLoop\Providers\ChangePassword\
 				$cryptPassword = \crypt($password, '$6$' . $this->generatePassword(true).  $this->generatePassword(true));
 				break;
 			default:
-				$cryptPassword = \crypt($password);
+				$cryptPassword = \crypt($password, \substr($this->generatePassword(true), 0, 2));
 				break;
 		}
 

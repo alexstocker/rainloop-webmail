@@ -480,7 +480,7 @@ class Contact
 		{
 			if (0 < \strlen($sValue))
 			{
-				$sEncValue = @\utf8_encode($sValue);
+				$sEncValue = \MailSo\Base\Utils::ConvertEncoding($sValue, 'ISO-8859-1', 'UTF-8');
 				if (0 === \strlen($sEncValue))
 				{
 					$sEncValue = $sValue;
@@ -598,7 +598,7 @@ class Contact
 					{
 						if (0 < \strlen($sValue))
 						{
-							$sEncValue = @\utf8_encode($sValue);
+							$sEncValue = \MailSo\Base\Utils::ConvertEncoding($sValue, 'ISO-8859-1', 'UTF-8');
 							if (0 === \strlen($sEncValue))
 							{
 								$sEncValue = $sValue;

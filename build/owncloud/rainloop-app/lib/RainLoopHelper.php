@@ -64,17 +64,6 @@ class OC_RainLoop_Helper
 	}
 
 	/**
-	 * @return boolean
-	 */
-	public static function mcryptSupported()
-	{
-		return function_exists('mcrypt_encrypt') &&
-			function_exists('mcrypt_decrypt') &&
-			defined('MCRYPT_RIJNDAEL_256') &&
-			defined('MCRYPT_MODE_ECB');
-	}
-
-	/**
 	 * @return string
 	 */
 	public static function openSslSupportedMethod()
@@ -144,12 +133,6 @@ class OC_RainLoop_Helper
 		{
 			return self::encodePasswordSsl($method, $sPassword, $sSalt);
 		}
-		else if (self::mcryptSupported())
-		{
-			return @trim(base64_encode(
-				@mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($sSalt), base64_encode($sPassword), MCRYPT_MODE_ECB)
-			));
-		}
 
 		return @trim(base64_encode($sPassword));
 	}
@@ -166,12 +149,6 @@ class OC_RainLoop_Helper
 		if ($method)
 		{
 			return self::decodePasswordSsl($method, $sPassword, $sSalt);
-		}
-		else if (self::mcryptSupported())
-		{
-			return @base64_decode(trim(
-				@mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($sSalt), base64_decode(trim($sPassword)), MCRYPT_MODE_ECB)
-			));
 		}
 
 		return @base64_decode(trim($sPassword));
@@ -249,6 +226,8 @@ class OC_RainLoop_Helper
 		{
 			$_ENV['RAINLOOP_OWNCLOUD'] = true;
 
+			// Required by RainLoop's public custom-data-path integration hook.
+			// phpcs:ignore PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
 			function __get_custom_data_full_path()
 			{
 				$sData = __DIR__.'/../../data/';

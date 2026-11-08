@@ -1,1 +1,1 @@
-<!-- empty -->
+<?php // Intentionally empty template. ?>

@@ -10,6 +10,8 @@
 
 include_once OC_App::getAppPath('rainloop').'/lib/RainLoopHelper.php';
 
+include_once __DIR__ . '/../lib/RainLoopHelper.php';
+
 OC::$CLASSPATH['OC_RainLoop_Helper'] = OC_App::getAppPath('rainloop') . '/lib/RainLoopHelper.php';
 
 OCP\App::registerAdmin('rainloop', 'admin');
